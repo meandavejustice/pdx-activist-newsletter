@@ -77,3 +77,7 @@ function redirect(req, res, path) {
   });
   res.end();
 }
+
+function sendConfirmation(val) {
+  console.log('SEND EMAIL METHOD NOT IMPLEMENTED: ', val);
+}
