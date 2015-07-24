@@ -1,64 +1,42 @@
 var http = require('http');
-var path = require('path');
-var qs = require('querystring');
-var st = require("st");
-var Busboy = require('busboy');
 var Router = require('http-hash-router');
-var sendHTML = require('send-data/html');
-var sendJSON = require('send-data/json');
+var Cookies = require('cookies');
 
-var confirmTmp = require('./templates/confirm');
-var formTmps = require('./templates/forms');
-var baseTmp = require('./templates/base');
+var config = require('./config.json');
 
-var inspect = require('util').inspect;
+var home = require('./routes/home');
+var accounts = require('./routes/accounts');
+var settings = require('./routes/settings');
+
+var orgs = require('./api/orgs');
+var events = require('./api/events');
 
 var router = Router();
-var port = 8000;
 
-var staticHandler = st({
+router.set("/sent", accounts.sent)
+router.set("/signup", accounts.signup)
+router.set("/confirm/:user/:token", accounts.confirm)
+router.set("/settings/:user", settings)
+
+router.set("/api/orgs", orgs)
+router.set("/api/orgs/:org", orgs)
+router.set("/api/events/:org", events)
+
+router.set("/", home)
+
+router.set("*", require("st")({
   path: __dirname + '/public',
   cache: false
-});
+}))
 
-router.set("/settings/:user", function(req, res, opts) {
-  console.log(opts);
-  console.log(qs.parse(req.url));
-  // redirect(req, res, '')
-})
-
-router.set("/confirm/:user/:token", function(req, res, opts) {
-  console.log('user:', opts.params.user);
-  console.log('token:', opts.params.token);
-  sendHTML(req, res, baseTmp(confirmTmp(opts.params.user)).outerHTML);
-})
-
-router.set("/signup", function(req, res) {
-  var busboy = new Busboy({headers: req.headers});
-  var email = '';
-  busboy.on('field', function(fieldname, val) {
-    if (fieldname === 'email') {
-      email = val;
-      sendConfirmation(val);
+http.createServer(function handler(req, res) {
+  var cookies = Cookies(req, res);
+  router(req, res, {
+    cookies: {
+      user: cookies.get('user'),
+      token: cookies.get('token')
     }
-  });
-  busboy.on('finish', function() {
-    res.writeHead(302, { Connection: 'close', Location: '/confirm' });
-    res.end();
-  });
-  req.pipe(busboy);
-})
-
-router.set("/", function(req, res) {
-  sendHTML(req, res, baseTmp(formTmps.signup()).outerHTML);
-})
-
-router.set("*", function(req, res) {
-  staticHandler(req, res);
-})
-
-var server = http.createServer(function handler(req, res) {
-  router(req, res, {}, onErr);
+  }, onErr);
 
   function onErr(err) {
     if (err) {
@@ -66,18 +44,6 @@ var server = http.createServer(function handler(req, res) {
       res.end(err.message);
     }
   }
-});
-server.listen(port);
+}).listen(config.port);
 
-console.log("Server listening on port: ", port);
-
-function redirect(req, res, path) {
-  res.writeHead(302, {
-    'Location': path
-  });
-  res.end();
-}
-
-function sendConfirmation(val) {
-  console.log('SEND EMAIL METHOD NOT IMPLEMENTED: ', val);
-}
+console.log("Server listening on port: ", config.port);

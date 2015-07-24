@@ -1,0 +1,13 @@
+{
+  "client_id": "FB CLIENT ID",
+  "grant_type": "client_credentials",
+  "client_secret": "FB CLIENT SECRET",
+  "port": 8000,
+  "mail": {
+    "service": "see nodemailer docs",
+    "auth":{
+      "user": "see nodemailer docs",
+      "pass": "see nodemailer docs"
+    }
+  }
+}
