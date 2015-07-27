@@ -5,22 +5,29 @@ var Cookies = require('cookies');
 var config = require('./config.json');
 
 var home = require('./routes/home');
+var event = require('./routes/event');
+var events = require('./routes/events');
 var accounts = require('./routes/accounts');
 var settings = require('./routes/settings');
 
 var orgs = require('./api/orgs');
-var events = require('./api/events');
+var eventsAPI = require('./api/events');
 
 var router = Router();
 
 router.set("/sent", accounts.sent)
 router.set("/signup", accounts.signup)
+
+router.set("/event/", event);
+router.set("/event/:id", event);
+router.set("/events/:org", events);
+
 router.set("/confirm/:user/:token", accounts.confirm)
 router.set("/settings/:user", settings)
 
 router.set("/api/orgs", orgs)
 router.set("/api/orgs/:org", orgs)
-router.set("/api/events/:org", events)
+router.set("/api/events/:org", eventsAPI)
 
 router.set("/", home)
 
