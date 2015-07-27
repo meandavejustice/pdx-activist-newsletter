@@ -2,6 +2,8 @@
   "client_id": "FB CLIENT ID",
   "grant_type": "client_credentials",
   "client_secret": "FB CLIENT SECRET",
+  "mapbox_access": "MAPBOX ACCESS",
+  "domain": "www.example.com",
   "port": 8000,
   "mail": {
     "service": "see nodemailer docs",

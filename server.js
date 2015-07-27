@@ -13,6 +13,8 @@ var settings = require('./routes/settings');
 var orgs = require('./api/orgs');
 var eventsAPI = require('./api/events');
 
+var map = require('./embed/map');
+
 var router = Router();
 
 router.set("/sent", accounts.sent)
@@ -30,6 +32,8 @@ router.set("/api/orgs/:org", orgs)
 router.set("/api/events/:org", eventsAPI)
 
 router.set("/", home)
+
+router.set("/embed/map", map)
 
 router.set("*", require("st")({
   path: __dirname + '/public',
